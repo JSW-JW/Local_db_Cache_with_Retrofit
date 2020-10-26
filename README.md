@@ -1,4 +1,11 @@
 # Local-db-Cache-Retrofit-REST-API-MVVM
 App that interacts with a REST API using Retrofit. There is a local db cache and architecture is MVVM.
 <br><br>
-This is a work in progress.
+
+# Single Source of Truth Principal
+
+* In case of this app, the view gets updated from datas which are retrieved from local db cache.
+* Local db cache gets updated from the Rest Api.
+* And MVVM pattern is proper for making this kind of App flow.
+
+

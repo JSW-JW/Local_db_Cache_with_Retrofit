@@ -10,8 +10,10 @@ import com.codingwithmitch.foodrecipes.AppExecutors;
 import com.codingwithmitch.foodrecipes.models.Recipe;
 import com.codingwithmitch.foodrecipes.persistence.RecipeDao;
 import com.codingwithmitch.foodrecipes.persistence.RecipeDatabase;
+import com.codingwithmitch.foodrecipes.requests.ServiceGenerator;
 import com.codingwithmitch.foodrecipes.requests.responses.ApiResponse;
 import com.codingwithmitch.foodrecipes.requests.responses.RecipeSearchResponse;
+import com.codingwithmitch.foodrecipes.util.Constants;
 import com.codingwithmitch.foodrecipes.util.NetworkBoundResource;
 import com.codingwithmitch.foodrecipes.util.Resource;
 
@@ -54,7 +56,12 @@ public class RecipeRepository {
             @NonNull
             @Override
             public LiveData<ApiResponse<RecipeSearchResponse>> createCall() {
-                return null;
+                return ServiceGenerator.getRecipeApi()
+                        .searchRecipe(
+                                Constants.API_KEY,
+                                query,
+                                String.valueOf(pageNumber)
+                        );
             }
         }.getAsLiveData();
     }

@@ -9,4 +9,9 @@ App that interacts with a REST API using Retrofit. There is a local db cache and
 * And MVVM pattern is proper for making this kind of App flow.
 * This kind of App flow(view being updated from the local db cache only) makes faster UX.
 
+# why convert retrofit call object to LiveData?
+
+* We don't need to use executors to make it executed on background thread. Because livedata is automatically executed asynchronously.
+* This makes the code more concise. 
+
 

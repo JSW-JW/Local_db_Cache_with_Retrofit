@@ -16,6 +16,8 @@ public abstract class RecipeDatabase extends RoomDatabase {
 
     public static final String DATABASE_NAME = "recipes_db";
 
+    private RecipeDao mRecipeDao;
+
     private static RecipeDatabase instance;
 
     public static RecipeDatabase getInstance(final Context context) {
@@ -28,5 +30,7 @@ public abstract class RecipeDatabase extends RoomDatabase {
         }
         return instance;
     }
+
+    public abstract RecipeDao getRecipeDao();
 
 }

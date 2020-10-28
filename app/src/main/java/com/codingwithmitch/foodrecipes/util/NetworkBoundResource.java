@@ -95,7 +95,7 @@ public abstract class NetworkBoundResource<CacheObject, RequestObject> {
                 */
 
                 if(RequestObjectApiResponse instanceof ApiResponse.ApiSuccessResponse){
-                    Log.d(TAG, "run: ApiSuccessResponse");
+                    Log.d(TAG, "onChanged: ApiSuccessResponse");
                     appExecutors.diskIO().execute(new Runnable() {
                         @Override
                         public void run() {

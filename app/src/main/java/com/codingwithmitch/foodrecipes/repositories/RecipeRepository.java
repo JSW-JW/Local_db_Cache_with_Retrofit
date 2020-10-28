@@ -44,10 +44,11 @@ public class RecipeRepository {
             @Override
             public void saveCallResult(@NonNull RecipeSearchResponse item) {
                 if(item.getRecipes() != null) { // recipe list used to be null if the api key expires. No matter now because it's not needed anymore.
-                    Recipe[] recipes = new Recipe[item.getRecipes().size()];
+//                    Recipe[] recipes = new Recipe[item.getRecipes().size()];
+                    Recipe[] recipes = item.getRecipes().toArray(new Recipe[0]);
 
                     int index = 0;
-                    for(long rowId: recipeDao.insertRecipes((Recipe[])(item.getRecipes().toArray(recipes)))){
+                    for(long rowId: recipeDao.insertRecipes(recipes)){
                         if(rowId == -1){ // conflict detected
                             Log.d(TAG, "saveCallResult: CONFLICT... This recipe is already in cache.");
                             // if already exists, I don't want to set the ingredients or timestamp b/c they will be erased

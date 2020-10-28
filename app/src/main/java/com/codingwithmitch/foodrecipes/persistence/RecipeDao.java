@@ -16,10 +16,10 @@ import static androidx.room.OnConflictStrategy.REPLACE;
 @Dao
 public interface RecipeDao {
 
-    @Insert(onConflict = IGNORE)
+    @Insert(onConflict = IGNORE) // not replace the object with new one.
     long[] insertRecipes(Recipe... recipe);
 
-    @Insert(onConflict = REPLACE)
+    @Insert(onConflict = REPLACE) // replace the object with new one.
     void insertRecipe(Recipe recipe);
 
     @Query("UPDATE recipes SET title = :title, publisher = :publisher, image_url = :image_url, social_rank = :social_rank" +

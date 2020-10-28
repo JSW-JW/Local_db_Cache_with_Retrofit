@@ -85,6 +85,11 @@ public abstract class NetworkBoundResource<CacheObject, RequestObject> {
                 result.removeSource(dbSource);
                 result.removeSource(apiResponse);
 
+                /*-----------------------------------------------------------------------------------
+                * createCall has already been made( ApiResponse.create(response) or ApiResponse(t) has already been called
+                * from the CallAdapter. All these processes do not need Background Executor. (using LiveData created by CallAdapter)
+                * -----------------------------------------------------------------------------------*/
+
                 Log.d(TAG, "run: attempting to refresh data from network...");
 
                 /*
@@ -93,6 +98,8 @@ public abstract class NetworkBoundResource<CacheObject, RequestObject> {
                         2) ApiErrorResponse
                         3) ApiEmptyResponse
                 */
+
+                // Processes below is executed on Background Thread (saving network data inside local db)
 
                 if(RequestObjectApiResponse instanceof ApiResponse.ApiSuccessResponse){
                     Log.d(TAG, "onChanged: ApiSuccessResponse");
@@ -105,7 +112,7 @@ public abstract class NetworkBoundResource<CacheObject, RequestObject> {
 
 
                             // observe local db again since new result from network will have been saved
-                            appExecutors.mainThread().execute(new Runnable() {
+                            appExecutors.mainThread().execute(new Runnable() { // TODO: why on mainThread should it be executed?
                                 @Override
                                 public void run() {
                                     // we specially request a new live data,

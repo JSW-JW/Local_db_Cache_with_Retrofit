@@ -45,7 +45,7 @@ public class RecipeRepository {
             public void saveCallResult(@NonNull RecipeSearchResponse item) {
                 if(item.getRecipes() != null) { // recipe list used to be null if the api key expires. No matter now because it's not needed anymore.
 //                    Recipe[] recipes = new Recipe[item.getRecipes().size()];
-                    Recipe[] recipes = item.getRecipes().toArray(new Recipe[0]);
+                    Recipe[] recipes = item.getRecipes().toArray(new Recipe[0]); // make an Array which has sizes of larger one(List vs Array). In this case, of course the thing of List size is made.
 
                     int index = 0;
                     for(long rowId: recipeDao.insertRecipes(recipes)){

@@ -14,6 +14,9 @@ public class ServiceGenerator {
                     .addCallAdapterFactory(new LiveDataCallAdapterFactory())
                     .addConverterFactory(GsonConverterFactory.create());
 
+    // when searchApi is executed, is the ResponseType given automatically to Converter ?
+    // Or is there separate part that notifies the Converter which type of Response it is?
+
     private static Retrofit retrofit = retrofitBuilder.build();
 
     private static RecipeApi recipeApi = retrofit.create(RecipeApi.class);

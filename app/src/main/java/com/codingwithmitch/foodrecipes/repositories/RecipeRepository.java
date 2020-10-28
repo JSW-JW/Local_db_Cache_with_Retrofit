@@ -1,9 +1,11 @@
 package com.codingwithmitch.foodrecipes.repositories;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.NavUtils;
 import androidx.lifecycle.LiveData;
 
 import com.codingwithmitch.foodrecipes.AppExecutors;
@@ -20,6 +22,8 @@ import com.codingwithmitch.foodrecipes.util.Resource;
 import java.util.List;
 
 public class RecipeRepository {
+
+    private static final String TAG = "RecipeRepository";
 
     private static RecipeRepository instance;
     private RecipeDao recipeDao;
@@ -39,7 +43,25 @@ public class RecipeRepository {
         return new NetworkBoundResource<List<Recipe>, RecipeSearchResponse>(AppExecutors.getInstance()) {
             @Override
             public void saveCallResult(@NonNull RecipeSearchResponse item) {
+                if(item.getRecipes() != null) { // recipe list used to be null if the api key expires. No matter now because it's not needed anymore.
+                    Recipe[] recipes = new Recipe[item.getRecipes().size()];
 
+                    int index = 0;
+                    for(long rowId: recipeDao.insertRecipes((Recipe[])(item.getRecipes().toArray(recipes)))){
+                        if(rowId == -1){ // conflict detected
+                            Log.d(TAG, "saveCallResult: CONFLICT... This recipe is already in cache.");
+                            // if already exists, I don't want to set the ingredients or timestamp b/c they will be erased
+                            recipeDao.updateRecipe(
+                                    recipes[index].getRecipe_id(),
+                                    recipes[index].getTitle(),
+                                    recipes[index].getPublisher(),
+                                    recipes[index].getImage_url(),
+                                    recipes[index].getSocial_rank()
+                            );
+                        }
+                        index++;
+                    }
+                }
             }
 
             @Override

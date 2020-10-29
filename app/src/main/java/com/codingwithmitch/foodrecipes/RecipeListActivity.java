@@ -196,6 +196,7 @@ public class RecipeListActivity extends BaseActivity implements OnRecipeListener
     @Override
     public void onBackPressed() {
         if (mRecipeListViewModel.getViewState().getValue() == RecipeListViewModel.ViewState.RECIPES) {
+            mRecipeListViewModel.cancelSearchRequest();
             mRecipeListViewModel.setViewCategories();
         } else {
             super.onBackPressed();

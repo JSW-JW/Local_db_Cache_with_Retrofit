@@ -2,6 +2,8 @@ package com.codingwithmitch.foodrecipes.viewmodels;
 
 
 import android.app.Application;
+import android.util.Log;
+
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
@@ -21,7 +23,10 @@ public class RecipeListViewModel extends AndroidViewModel {
     private static final String TAG = "RecipeListViewModel";
 
     public static final String QUERY_EXHAUSTED = "NO more results.";
-    public enum ViewState {CATEGORIES, RECIPES};
+
+    public enum ViewState {CATEGORIES, RECIPES}
+
+    ;
 
     private MutableLiveData<ViewState> viewState;
     private MediatorLiveData<Resource<List<Recipe>>> recipes = new MediatorLiveData<>();
@@ -32,6 +37,7 @@ public class RecipeListViewModel extends AndroidViewModel {
     private boolean isPerformingQuery;
     private int pageNumber;
     private String query;
+    private boolean cancelRequest;
 
     public RecipeListViewModel(@NonNull Application application) {
         super(application);
@@ -41,17 +47,17 @@ public class RecipeListViewModel extends AndroidViewModel {
     }
 
     private void init() {
-        if(viewState == null) {
+        if (viewState == null) {
             viewState = new MutableLiveData<>();
             viewState.setValue(ViewState.CATEGORIES);
         }
     }
 
-    public LiveData<Resource<List<Recipe>>> getRecipes(){
+    public LiveData<Resource<List<Recipe>>> getRecipes() {
         return recipes;
     }
 
-    public LiveData<ViewState> getViewState(){
+    public LiveData<ViewState> getViewState() {
         return viewState;
     }
 
@@ -59,7 +65,7 @@ public class RecipeListViewModel extends AndroidViewModel {
         return pageNumber;
     }
 
-    public void setViewCategories(){
+    public void setViewCategories() {
         viewState.setValue(ViewState.CATEGORIES);
     }
 
@@ -68,8 +74,8 @@ public class RecipeListViewModel extends AndroidViewModel {
     }
 
     public void searchRecipeApi(String query, int pageNumber) {
-        if(!isPerformingQuery) {
-            if(pageNumber == 0) {
+        if (!isPerformingQuery) {
+            if (pageNumber == 0) {
                 pageNumber = 1;
             }
             this.pageNumber = pageNumber;
@@ -78,14 +84,15 @@ public class RecipeListViewModel extends AndroidViewModel {
         }
     }
 
-    public void searchNextPage(){
-        if(!isQueryExhausted && !isPerformingQuery) {
+    public void searchNextPage() {
+        if (!isQueryExhausted && !isPerformingQuery) {
             pageNumber++;
             executeSearch();
         }
     }
 
-    public void executeSearch(){
+    public void executeSearch() {
+        cancelRequest = false;
         isPerformingQuery = true;
         viewState.setValue(ViewState.RECIPES);
 
@@ -93,37 +100,49 @@ public class RecipeListViewModel extends AndroidViewModel {
         recipes.addSource(repositoryResource, new Observer<Resource<List<Recipe>>>() {
             @Override
             public void onChanged(Resource<List<Recipe>> listResource) {
-
-                if(listResource != null) {
-                    recipes.setValue(listResource);
-                    if(listResource.status == Resource.Status.SUCCESS) {
-                        isPerformingQuery = false;
-                        if(listResource.data != null) {
-                            if(listResource.data.size() == 0) {
-                                recipes.setValue(
-                                        new Resource<List<Recipe>>(
-                                                Resource.Status.ERROR,
-                                                null,
-                                                QUERY_EXHAUSTED
-                                        )
-                                );
+                if (!cancelRequest) {
+                    if (listResource != null) {
+                        recipes.setValue(listResource);
+                        if (listResource.status == Resource.Status.SUCCESS) {
+                            isPerformingQuery = false;
+                            if (listResource.data != null) {
+                                if (listResource.data.size() == 0) {
+                                    recipes.setValue(
+                                            new Resource<List<Recipe>>(
+                                                    Resource.Status.ERROR,
+                                                    null,
+                                                    QUERY_EXHAUSTED
+                                            )
+                                    );
+                                }
                             }
+                            recipes.removeSource(repositoryResource);
+                        } else if (listResource.status == Resource.Status.ERROR) {
+                            isPerformingQuery = false;
+                            recipes.removeSource(repositoryResource);
                         }
-                     recipes.removeSource(repositoryResource);
-                    }
-                    else if(listResource.status == Resource.Status.ERROR) {
-                        isPerformingQuery = false;
+
+                        // In case of LoadingStatus, not doing anything.
+
+                    } else {
                         recipes.removeSource(repositoryResource);
                     }
-
-                    // In case of LoadingStatus, not doing anything.
-
                 }
                 else {
                     recipes.removeSource(repositoryResource);
                 }
             }
+
         });
+    }
+
+    public void cancelSearchRequest() {
+        if (isPerformingQuery) {
+            Log.d(TAG, "cancelSearchRequest: canceling the search request query");
+            cancelRequest = true;
+            isPerformingQuery = false;
+            pageNumber = 1;
+        }
     }
 }
 

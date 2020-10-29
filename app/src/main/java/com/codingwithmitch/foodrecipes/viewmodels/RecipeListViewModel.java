@@ -55,6 +55,13 @@ public class RecipeListViewModel extends AndroidViewModel {
         return viewState;
     }
 
+    public int getPageNumber() {
+        return pageNumber;
+    }
+
+    public String getQuery() {
+        return query;
+    }
 
     public void searchRecipeApi(String query, int pageNumber) {
         if(!isPerformingQuery) {

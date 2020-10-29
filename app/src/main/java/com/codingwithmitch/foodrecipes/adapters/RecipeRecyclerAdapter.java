@@ -137,7 +137,7 @@ public class RecipeRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         if(mRecipes == null){
             mRecipes = new ArrayList<>();
         }
-        if (!isLoading()) {
+        if(!isLoading()) {
             Recipe recipe = new Recipe();
             recipe.setTitle("LOADING...");
             mRecipes.add(recipe);

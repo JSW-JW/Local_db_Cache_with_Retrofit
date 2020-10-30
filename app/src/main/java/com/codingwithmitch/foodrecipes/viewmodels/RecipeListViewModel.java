@@ -92,6 +92,8 @@ public class RecipeListViewModel extends AndroidViewModel {
         }
     }
 
+    // TODO: if ConnectionFalse, no network call,(cause error toast) just cache.
+    // TODO : why request only 29 recipes?
     public void executeSearch() {
         requestStartTime = System.currentTimeMillis();
         cancelRequest = false;
@@ -106,7 +108,7 @@ public class RecipeListViewModel extends AndroidViewModel {
                     if (listResource != null) {
                         recipes.setValue(listResource);
                         if (listResource.status == Resource.Status.SUCCESS) {
-                            Log.d(TAG, "onChanged: REQUEST TIME: " + ((System.currentTimeMillis() - requestStartTime) / 1000) + " seconds.");
+                            Log.d(TAG, "onChanged: REQUEST TIME: onSuccess" + ((System.currentTimeMillis() - requestStartTime) / 1000) + " seconds.");
                             isPerformingQuery = false;
                             if (listResource.data != null) {
                                 if (listResource.data.size() == 0) {
@@ -121,7 +123,7 @@ public class RecipeListViewModel extends AndroidViewModel {
                             }
                             recipes.removeSource(repositoryResource);
                         } else if (listResource.status == Resource.Status.ERROR) {
-                            Log.d(TAG, "onChanged: REQUEST TIME: " + ((System.currentTimeMillis() - requestStartTime) / 1000) + " seconds.");
+                            Log.d(TAG, "onChanged: REQUEST TIME: onError" + ((System.currentTimeMillis() - requestStartTime) / 1000) + " seconds.");
                             isPerformingQuery = false;
                             recipes.removeSource(repositoryResource);
                         }

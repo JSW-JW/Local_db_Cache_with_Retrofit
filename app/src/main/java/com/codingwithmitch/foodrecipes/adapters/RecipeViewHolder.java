@@ -10,6 +10,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.util.ViewPreloadSizeProvider;
 import com.codingwithmitch.foodrecipes.R;
 import com.codingwithmitch.foodrecipes.models.Recipe;
 
@@ -19,14 +20,17 @@ public class RecipeViewHolder extends RecyclerView.ViewHolder implements View.On
     AppCompatImageView image;
     OnRecipeListener onRecipeListener;
     RequestManager mRequestManager;
+    ViewPreloadSizeProvider<String> viewPreloadSizeProvider;
 
     public RecipeViewHolder(@NonNull View itemView,
                             OnRecipeListener onRecipeListener,
-                            RequestManager requestManager) {
+                            RequestManager requestManager,
+                            ViewPreloadSizeProvider viewPreloadSizeProvider) {
         super(itemView);
 
         this.onRecipeListener = onRecipeListener;
         this.mRequestManager = requestManager;
+        this.viewPreloadSizeProvider = viewPreloadSizeProvider;
 
         title = itemView.findViewById(R.id.recipe_title);
         publisher = itemView.findViewById(R.id.recipe_publisher);
@@ -44,6 +48,8 @@ public class RecipeViewHolder extends RecyclerView.ViewHolder implements View.On
         title.setText(recipe.getTitle());
         publisher.setText(recipe.getPublisher());
         socialScore.setText(String.valueOf(Math.round(recipe.getSocial_rank())));
+
+        viewPreloadSizeProvider.setView(image);
     }
 
     @Override

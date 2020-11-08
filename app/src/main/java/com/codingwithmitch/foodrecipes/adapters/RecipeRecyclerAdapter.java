@@ -1,22 +1,18 @@
 package com.codingwithmitch.foodrecipes.adapters;
 
-import android.net.Uri;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.room.ColumnInfo;
 
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.bumptech.glide.Glide;
 import com.bumptech.glide.ListPreloader;
 import com.bumptech.glide.RequestBuilder;
 import com.bumptech.glide.RequestManager;
-import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.util.ViewPreloadSizeProvider;
 import com.codingwithmitch.foodrecipes.R;
 import com.codingwithmitch.foodrecipes.models.Recipe;
@@ -28,6 +24,8 @@ import java.util.List;
 
 public class RecipeRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements
         ListPreloader.PreloadModelProvider<String> {
+
+    private static final String TAG = "RecipeRecyclerAdapter";
 
     private static final int RECIPE_TYPE = 1;
     private static final int LOADING_TYPE = 2;
@@ -98,8 +96,10 @@ public class RecipeRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         if (mRecipes.get(position).getSocial_rank() == -1) {
             return CATEGORY_TYPE;
         } else if (mRecipes.get(position).getTitle().equals("LOADING...")) {
+            Log.d(TAG, "getItemViewType: LOADING_TYPE");
             return LOADING_TYPE;
         } else if (mRecipes.get(position).getTitle().equals("EXHAUSTED...")) {
+            Log.d(TAG, "getItemViewType: EXHAUSTED_TYPE");
             return EXHAUSTED_TYPE;
         } else {
             return RECIPE_TYPE;
@@ -130,6 +130,7 @@ public class RecipeRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
         exhaustedRecipe.setTitle("EXHAUSTED...");
         mRecipes.add(exhaustedRecipe);
         notifyDataSetChanged();
+        Log.d(TAG, "setQueryExhausted: called");
     }
 
     public void hideLoading() {

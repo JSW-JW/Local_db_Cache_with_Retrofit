@@ -86,6 +86,7 @@ public class RecipeListActivity extends BaseActivity implements OnRecipeListener
                                 Toast.makeText(RecipeListActivity.this, listResource.message, Toast.LENGTH_LONG).show();
 
                                 if (listResource.message.equals(mRecipeListViewModel.QUERY_EXHAUSTED)) {
+                                    Log.d(TAG, "RecipeListActivity: QUERY_EXHAUSTED");
                                     mAdapter.setQueryExhausted();
                                 }
                                 break;
@@ -105,7 +106,7 @@ public class RecipeListActivity extends BaseActivity implements OnRecipeListener
             }
         });
 
-        mRecipeListViewModel.getViewState().observe(this, new Observer<RecipeListViewModel.ViewState>() {
+        mRecipeListViewModel.getViewstate().observe(this, new Observer<RecipeListViewModel.ViewState>() {
             @Override
             public void onChanged(@Nullable RecipeListViewModel.ViewState viewState) {
                 if (viewState != null) {
@@ -142,7 +143,7 @@ public class RecipeListActivity extends BaseActivity implements OnRecipeListener
 
     private void searchRecipesApi(String query) {
         mRecyclerView.smoothScrollToPosition(0);
-        mRecipeListViewModel.searchRecipeApi(query, 1);
+        mRecipeListViewModel.searchRecipesApi(query, 1);
         mSearchView.clearFocus();
     }
 
@@ -159,7 +160,7 @@ public class RecipeListActivity extends BaseActivity implements OnRecipeListener
                 super.onScrollStateChanged(recyclerView, newState);
 
                 if (!mRecyclerView.canScrollVertically(1)
-                        && mRecipeListViewModel.getViewState().getValue() == RecipeListViewModel.ViewState.RECIPES) {
+                        && mRecipeListViewModel.getViewstate().getValue() == RecipeListViewModel.ViewState.RECIPES) {
                     mRecipeListViewModel.searchNextPage();
                 }
             }
@@ -206,7 +207,7 @@ public class RecipeListActivity extends BaseActivity implements OnRecipeListener
 
     @Override
     public void onBackPressed() {
-        if (mRecipeListViewModel.getViewState().getValue() == RecipeListViewModel.ViewState.RECIPES) {
+        if (mRecipeListViewModel.getViewstate().getValue() == RecipeListViewModel.ViewState.RECIPES) {
             mRecipeListViewModel.cancelSearchRequest();
             mRecipeListViewModel.setViewCategories();
         } else {

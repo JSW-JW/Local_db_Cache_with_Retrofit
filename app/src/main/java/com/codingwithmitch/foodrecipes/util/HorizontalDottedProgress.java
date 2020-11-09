@@ -13,6 +13,8 @@ import android.view.animation.Transformation;
 
 public class HorizontalDottedProgress extends View {
 
+    Paint paint = new Paint();
+
     //actual dot radius
     private int mDotRadius = 5;
 
@@ -42,13 +44,11 @@ public class HorizontalDottedProgress extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        Paint paint = new Paint();
-
         //set the color for the dot that you want to draw
         paint.setColor(Color.parseColor("#fd583f"));
 
         //function to create dot
-        createDot(canvas,paint);
+        createDot(canvas, paint);
     }
 
     @Override
@@ -120,12 +120,11 @@ public class HorizontalDottedProgress extends View {
         startAnimation(bounceAnimation);
     }
 
-
     private class BounceAnimation extends Animation {
         @Override
         protected void applyTransformation(float interpolatedTime, Transformation t) {
             super.applyTransformation(interpolatedTime, t);
-            //call invalidate to redraw your view againg.
+            //call invalidate to redraw your view.
             invalidate();
         }
     }

@@ -1,15 +1,12 @@
 package com.codingwithmitch.foodrecipes;
 
-import androidx.annotation.LongDef;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelProviders;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -18,22 +15,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 
-
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.integration.recyclerview.RecyclerViewPreloader;
-import com.bumptech.glide.request.Request;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.util.ViewPreloadSizeProvider;
 import com.codingwithmitch.foodrecipes.adapters.OnRecipeListener;
 import com.codingwithmitch.foodrecipes.adapters.RecipeRecyclerAdapter;
-import com.codingwithmitch.foodrecipes.models.Recipe;
-import com.codingwithmitch.foodrecipes.util.Resource;
-import com.codingwithmitch.foodrecipes.util.Testing;
 import com.codingwithmitch.foodrecipes.util.VerticalSpacingItemDecorator;
 import com.codingwithmitch.foodrecipes.viewmodels.RecipeListViewModel;
-
-import java.util.List;
 
 
 public class RecipeListActivity extends BaseActivity implements OnRecipeListener {
@@ -61,49 +51,46 @@ public class RecipeListActivity extends BaseActivity implements OnRecipeListener
     }
 
     private void subscribeObservers() {
-        mRecipeListViewModel.getRecipes().observe(this, new Observer<Resource<List<Recipe>>>() {
-            @Override
-            public void onChanged(Resource<List<Recipe>> listResource) {
-                if (listResource != null) {
-                    Log.d(TAG, "onChanged: status: " + listResource.status);
+        mRecipeListViewModel.getRecipes().observe(this, listResource -> {
+            if (listResource != null) {
+                Log.d(TAG, "onChanged: status: " + listResource.status);
 
-                    if (listResource.data != null) {
-                        switch (listResource.status) {
-                            case LOADING: {
-                                if (mRecipeListViewModel.getPageNumber() > 1) {
-                                    mAdapter.displayLoading();
-                                } else {
-                                    mAdapter.displayOnlyLoading();
-                                }
-                                break;
+                if (listResource.data != null) {
+                    switch (listResource.status) {
+                        case LOADING: {
+                            if (mRecipeListViewModel.getPageNumber() > 1) {
+                                mAdapter.displayLoading();
+                            } else {
+                                mAdapter.displayOnlyLoading();
                             }
-                            case ERROR: {
-                                Log.e(TAG, "onChanged: cannot refresh the cache.");
-                                Log.e(TAG, "onChanged: ERROR message: " + listResource.message);
-                                Log.e(TAG, "onChanged: status: ERROR, #recipes: " + listResource.data.size());
-                                mAdapter.hideLoading();
-                                mAdapter.setRecipes(listResource.data);  // we can still get the recipe from cache even if error occurs.
-                                Toast.makeText(RecipeListActivity.this, listResource.message, Toast.LENGTH_LONG).show();
+                            break;
+                        }
+                        case ERROR: {
+                            Log.e(TAG, "onChanged: cannot refresh the cache.");
+                            Log.e(TAG, "onChanged: ERROR message: " + listResource.message);
+                            Log.e(TAG, "onChanged: status: ERROR, #recipes: " + listResource.data.size());
+                            mAdapter.hideLoading();
+                            mAdapter.setRecipes(listResource.data);  // we can still get the recipe from cache even if error occurs.
+                            Toast.makeText(RecipeListActivity.this, listResource.message, Toast.LENGTH_LONG).show();
 
-                                if (listResource.message.equals(mRecipeListViewModel.QUERY_EXHAUSTED)) {
-                                    Log.d(TAG, "RecipeListActivity: QUERY_EXHAUSTED");
-                                    mAdapter.setQueryExhausted();
-                                }
-                                break;
+                            if (listResource.message.equals(mRecipeListViewModel.QUERY_EXHAUSTED)) {
+                                Log.d(TAG, "RecipeListActivity: QUERY_EXHAUSTED");
+                                mAdapter.setQueryExhausted();
                             }
-                            case SUCCESS: {
-                                Log.d(TAG, "onChanged: cache has been refreshed");
-                                Log.d(TAG, "onChanged: status: SUCCESS, #Recipes:" + listResource.data.size());
-                                mAdapter.hideLoading();
-                                mAdapter.setRecipes(listResource.data);
-                                break;
-                            }
+                            break;
+                        }
+                        case SUCCESS: {
+                            Log.d(TAG, "onChanged: cache has been refreshed");
+                            Log.d(TAG, "onChanged: status: SUCCESS, #Recipes:" + listResource.data.size());
+                            mAdapter.hideLoading();
+                            mAdapter.setRecipes(listResource.data);
+                            break;
                         }
                     }
-
                 }
 
             }
+
         });
 
         mRecipeListViewModel.getViewstate().observe(this, new Observer<RecipeListViewModel.ViewState>() {
@@ -167,7 +154,7 @@ public class RecipeListActivity extends BaseActivity implements OnRecipeListener
         });
 
         RecyclerViewPreloader<String> preloader = new RecyclerViewPreloader<String>
-                        (Glide.with(this),
+                        (initGlide(),
                         mAdapter,
                         viewPreloadSizeProvider,
                         30);

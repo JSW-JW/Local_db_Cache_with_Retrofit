@@ -22,3 +22,15 @@ App that interacts with a REST API using Retrofit. There is a local db cache and
 # Macro Structure
 
 * SQLite Cache vs Retrofit Cache // In this app, SQLite Cache is more proper for user experience
+
+# + I got to learn additinally
+
+* There are 3 ways of pagination(Cursor-Based, Time-Based, Offset-Based). This could be too brief explanation, but in case of apps like
+Facebook, Instagram which gets the feed from data source, The first two of them quite fits well. But, in case of app like address book,
+it should use Offset-Based Pagination because it should be able to show the data immediately.
+
+# Things to think about to improve performance
+
+* Does the way of pagination fits the app's user experience and performance?
+* If the size of this app gets bigger, is it necessary to use library like PagingLibrary?
+
